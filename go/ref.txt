@@ -1,0 +1,8 @@
+pkg flag:
+	https://golang.org/pkg/flag/
+pkg getopt:
+	https://github.com/pborman/getopt
+	https://godoc.org/github.com/pborman/getopt
+pkg goopt:
+	https://github.com/droundy/goopt
+	https://godoc.org/github.com/droundy/goopt
