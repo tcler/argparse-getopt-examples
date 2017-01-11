@@ -12,7 +12,12 @@ cli.D(args:3, valueSeparator:',', argName:'property,value',
 def args = ' -tt -l -l  -D a,b,c,d,e  -logfile abc -f xyz --help'.split() // normally from commandline itself
 def options = cli.parse(args)
 
+println ""
+println "\${this.class} = ${this.class}"
+println "\${this.class.getName()} = ${this.class.getName()}"
+println ""
 println "args = ${args.join(' ')}"
+println ""
 println "\$options = $options"
 println "\$options.a = $options.a"
 println "\$options.l = $options.l"
@@ -20,11 +25,11 @@ println "\$options.t = $options.t"
 println "\${options.t} = ${options.t}"
 println "\${options.arguments()} = ${options.arguments()}"
 println "\$options.arguments() = $options.arguments()" //wrong usage
-
+println ""
 println "\$options.D = $options.D"
 println "\$options.Ds = $options.Ds"
 println "\$options.logfile = $options.logfile"
-
+println ""
 if (options.help) {
 	cli.usage()
 }
