@@ -4,6 +4,7 @@ def cli = new CliBuilder(
   usage : 'program [options] <arguments>',
   header : 'Options:',
   //posix: false,
+  stopAtNonOption: false,
 )
  
 cli.with {
