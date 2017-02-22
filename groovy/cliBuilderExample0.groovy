@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 //http://docs.groovy-lang.org/next/html/gapi/groovy/util/CliBuilder.html
 
 def cli = new CliBuilder(usage:'xcmd [options] arguments', header: 'options:')

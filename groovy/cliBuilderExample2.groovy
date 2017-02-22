@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 import org.apache.commons.cli.Option
 
 def cli = new CliBuilder(

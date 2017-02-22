@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 
 def cli = new CliBuilder(
   usage : 'program [options] <arguments>',
