@@ -1,5 +1,10 @@
 //ref: https://commons.apache.org/proper/commons-cli/usage.html
-//please first download commons-cli-${ver}.jar and unzip in classpath
+//
+//usage: 
+//1. download commons-cli-${ver} package .zip or .tgz and unzip
+//2. javac -classpath commons-cli-${ver}/commons-cli-$ver.jar CommonsCliExample.java
+//3. java -classpath commons-cli-${ver}/commons-cli-$ver.jar CommonsCliExample
+//BTW: if download src package, -classpath is commons-cli-${ver}/src/main/java
 
 import java.util.*;
 import org.apache.commons.cli.*;
