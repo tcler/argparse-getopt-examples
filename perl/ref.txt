@@ -1,0 +1,6 @@
+Getopt::Long
+	http://perldoc.perl.org/Getopt/Long.html
+	# or run: perldoc Getopt::Long
+Getopt::Std
+	http://perldoc.perl.org/Getopt/Std.html
+	# or run: perldoc Getopt::Std
