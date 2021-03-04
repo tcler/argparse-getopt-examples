@@ -1,6 +1,6 @@
 //ref: https://commons.apache.org/proper/commons-cli/usage.html
 //
-//usage: 
+//usage:
 //1. download commons-cli-${ver} package .zip or .tgz and unzip
 //2. javac -classpath commons-cli-${ver}/commons-cli-$ver.jar CommonsCliExample.java
 //3. java -classpath commons-cli-${ver}/commons-cli-$ver.jar CommonsCliExample
