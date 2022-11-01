@@ -1,6 +1,8 @@
 #include <stdio.h>   /* printf */
 #include <stdlib.h>  /* exit */
 #include <getopt.h>
+#include <errno.h>
+#include <string.h>
 
 void usage(char *prog, FILE *fp)
 {
@@ -12,6 +14,8 @@ void usage(char *prog, FILE *fp)
 		"  ...\n"
 	);
 }
+
+long long int countlines(char *filename);
 
 int main(int argc, char **argv)
 {
@@ -82,6 +86,7 @@ int main(int argc, char **argv)
 		}
 	}
 
+	int argind = optind;
 	if (optind < argc) {
 		printf("non-option ARGV-elements: ");
 		while (optind < argc)
@@ -89,6 +94,35 @@ int main(int argc, char **argv)
 		printf("\n");
 	}
 
+	optind = argind;
+
+	printf("\n");
+	while (optind < argc) {
+		char *filename = argv[optind++];
+		long long int nlines = countlines(filename);
+		if (nlines >= 0) {
+			printf("%s: %lld\n", filename, countlines(filename));
+		} else {
+			fprintf(stderr, "%s: %s\n", filename, strerror(errno));
+		}
+	}
+
 	exit(EXIT_SUCCESS);
 }
 
+long long int countlines(char *filename)
+{
+	long long int nlines = 0;
+	char ch = '\0';
+	FILE *fp = fopen(filename, "r");
+	if (fp == NULL) {
+		return -1;
+	}
+
+	do {
+		ch = fgetc(fp);
+		if (ch == '\n')
+			nlines++;
+	} while (ch != EOF);
+	return nlines;
+}
