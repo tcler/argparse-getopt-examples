@@ -20,7 +20,7 @@ for index in range(len(pdf)):
     for img in imgs:
         if (img[3] == 990):
             wmimg_xrefs.append(img[0])
-            break
+            #break
 
     # make a small 100% transparent pixmap (of just any dimension)
     pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
