@@ -9,12 +9,13 @@ path = sys.argv[1]
 pdfname = path.split(".")[0]
 pdf = fitz.open(path)
 
-for page_index in range(len(pdf)):
-    #print(f"page-{page_index}:")
-    page = pdf[page_index]
-    page.clean_contents()
+for index in range(len(pdf)):
+    #print(f"page-{index}:")
+    page = pdf[index]
+    page.clean_contents()  # unify page's /Contents into one
     imgs = page.get_images()
     #print(imgs)
+
     wmimg_xrefs = []
     for img in imgs:
         if (img[3] == 990):
@@ -35,7 +36,7 @@ for page_index in range(len(pdf)):
     # there now is a second /Contents object, showing new image
     cont_xrefs = page.get_contents()
 
-    # make sure that new /Contents(cont_xrefs[1]) is forgotten again
+    # make sure that new /Contents(cont_xrefs[1]) is forgotten
     page.set_contents(cont_xrefs[0])
-    page.clean_contents()
+    page.clean_contents()  # unify page's /Contents into one again
 pdf.ez_save(f"{path.replace('.pdf','')}-no-wartermark.pdf", garbage=4)
