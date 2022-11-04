@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # author: yin-jianhong@163.com
 #
@@ -36,21 +36,21 @@ parser.add_argument('--foo', type=int, nargs='?', action='append',
 parser.add_argument('--bar', type=int, nargs='+', action='append',
                 help='an integer for the accumulator')
 parser.add_argument('--boo', type=list, nargs='*', action='append',
-                help='an integer for the accumulator')
+                help='an list for the accumulator')
 
 args = parser.parse_args()
 
 parser.print_help()
 
 if args.enable:
-    print "enable = %s" % args.enable
+    print("enable = %s" % args.enable)
 if args.Verbosity:
-    print "Verbosity = %d" % args.Verbosity
+    print("Verbosity = %d" % args.Verbosity)
 if args.verbosity:
-    print "verbosity = %d" % args.verbosity
+    print("verbosity = %d" % args.verbosity)
 if args.foo:
-    print "foo = ", args.foo
+    print("foo = ", args.foo)
 if args.bar:
-    print "bar = ", args.bar
+    print("bar = ", args.bar)
 if args.boo:
-    print "boo = ", args.boo
+    print("boo = ", args.boo)
