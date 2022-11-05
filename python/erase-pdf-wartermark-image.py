@@ -56,7 +56,7 @@ npages = len(pdf)
 min_occurrence = 99.90
 base_page = pdf[base_page_idx]
 base_imgs = base_page.get_images()
-if (debug):
+if (debug > 1):
     print(f"[DEBUG] base_page_imgs {base_imgs}")
 
 #scan and detect the wartermark image. here we assume:
@@ -109,9 +109,9 @@ wm_image, wm_imagef_obj = wm_images[cmpidx].info, wm_images[cmpidx].imgf
 for index in range(npages):
     page = pdf[index]
     imgs = page.get_images()
-    if (debug and index == base_page_idx):
+    if (debug > 1 and index == base_page_idx):
         print(f"[DEBUG] base_page_imgs {imgs}")
-    if (debug > 1):
+    if (debug > 2):
         print(f"page{index}: {imgs}")
 
     page.clean_contents()  # unify page's /Contents into one
