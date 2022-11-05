@@ -6,10 +6,10 @@ import fitz  #python3 pymupdf module
 import io,os,sys
 from PIL import Image
 
-usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-number>] [-c<cmp-index>]"
+usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-index>] [-c<wartermark-index>]"
 path = None
 base_page_idx = 0
-cmpidx = -1
+wartermark_idx = -1
 debug = 0
 for arg in sys.argv[1:]:
     if (arg[0] != '-'):
@@ -22,7 +22,7 @@ for arg in sys.argv[1:]:
         elif (arg[:2] == "-n"):
             base_page_idx = int(arg[2:])
         elif (arg[:2] == "-c"):
-            cmpidx = int(arg[2:])
+            wartermark_idx = int(arg[2:])
 if (path == None):
     print(usage)
     exit(1)
@@ -53,6 +53,10 @@ WMImage = namedtuple('WMImage', ['info', 'imgf', 'pct'])
 
 pdf = fitz.open(path)
 npages = len(pdf)
+if (base_page_idx < 0): base_page_idx += npages
+if (base_page_idx > (npages-1)):
+    print(f"[WARN] base-page-idx {base_page_idx} beyond the max index, use the max({npages-1}) instead")
+    base_page_idx = npages - 1
 min_occurrence = 99.90
 base_page = pdf[base_page_idx]
 base_imgs = base_page.get_images()
@@ -84,8 +88,7 @@ if (len(wm_images) == 0):
     exit(1)
 
 nwmimg = len(wm_images)
-if (cmpidx < 0): cmpidx += nwmimg
-print(f"[INFO] detected {nwmimg} wartermark images:")
+print(f"[INFO] detected {nwmimg} wartermark image[s]:")
 for i in range(nwmimg):
     info, imgf, pct = wm_images[i].info, wm_images[i].imgf, wm_images[i].pct
     print(f"[INFO] wartermark image {i}:\n[INFO] |-> info: {info}\n[INFO] |-> data-size: {len(imgf['image'])}\n[INFO] `-> occurrence: {pct}")
@@ -101,11 +104,15 @@ if (debug):
         wmimgf = Image.open(io.BytesIO(wmimg_bytes))
         wmimgf.save(wmimgf_path)
 
-print(f"[INFO] erase wartermark image {cmpidx} from pages ...")
+if (wartermark_idx < 0): wartermark_idx += nwmimg
+if (wartermark_idx > (nwmimg-1)):
+    print(f"[WARN] wartermark-idx {wartermark_idx} beyond the max index, use the max({nwmimg-1}) instead")
+    wartermark_idx = nwmimg - 1
+print(f"[INFO] erase wartermark image {wartermark_idx} from pages ...")
 # make a small 100% transparent pixmap (of just any dimension)
 pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
 pix.clear_with()  # clear all samples bytes to 0x00
-wm_image, wm_imagef_obj = wm_images[cmpidx].info, wm_images[cmpidx].imgf
+wm_image, wm_imagef_obj = wm_images[wartermark_idx].info, wm_images[wartermark_idx].imgf
 for index in range(npages):
     page = pdf[index]
     imgs = page.get_images()
