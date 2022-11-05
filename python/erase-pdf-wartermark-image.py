@@ -40,7 +40,8 @@ def imginfo_cmp(img1, img2):
         return False
 
 def imgfobj_cmp(imgf_obj1, imgf_obj2):
-    if (len(imgf_obj1['image']) == len(imgf_obj2['image'])):
+    #if (len(imgf_obj1['image']) == len(imgf_obj2['image'])):
+    if ((imgf_obj1['image']) == (imgf_obj2['image'])):
         return True
     else:
         return False
