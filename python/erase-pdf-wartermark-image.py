@@ -9,7 +9,7 @@ from PIL import Image
 usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-number>] [-c<cmp-index>]"
 path = None
 base_page_idx = 0
-cmpidx = 0
+cmpidx = -1
 debug = 0
 for arg in sys.argv[1:]:
     if (arg[0] != '-'):
@@ -84,6 +84,7 @@ if (len(wm_images) == 0):
     exit(1)
 
 nwmimg = len(wm_images)
+if (cmpidx < 0): cmpidx += nwmimg
 print(f"[INFO] detected {nwmimg} wartermark images:")
 for i in range(nwmimg):
     info, imgf, pct = wm_images[i].info, wm_images[i].imgf, wm_images[i].pct
