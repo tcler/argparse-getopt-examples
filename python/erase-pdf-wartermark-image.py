@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 #ref: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/image-replacement/remover.py
+#required pkgs on Fedora: mupdf python3-PyMuPDF
 
 import fitz  #python3 pymupdf module
 import io,os,sys
