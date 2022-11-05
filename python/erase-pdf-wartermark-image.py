@@ -18,7 +18,7 @@ for arg in sys.argv[1:]:
         if (arg[:2] == "-h"):
             print(usage); exit(0)
         elif (arg[:2] == "-d"):
-            debug += 1
+            debug += arg.count('d')
         elif (arg[:2] == "-n"):
             base_page_idx = int(arg[2:])
         elif (arg[:2] == "-c"):
