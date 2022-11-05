@@ -122,7 +122,6 @@ for index in range(npages):
     if (debug > 2):
         print(f"page{index}: {imgs}")
 
-    page.clean_contents()  # unify page's /Contents into one
     wmimg_xrefs = []
     for img in imgs:
         if (imginfo_cmp(img, wm_image)):
@@ -131,6 +130,7 @@ for index in range(npages):
                 wmimg_xrefs.append(img[0])
 
     # insert new image just anywhere
+    page.clean_contents()  # unify page's /Contents into one
     new_xref = page.insert_image(page.rect, pixmap=pix)
 
     # copy over definition and stream of new image
