@@ -108,13 +108,13 @@ pix.clear_with()  # clear all samples bytes to 0x00
 wm_image, wm_imagef_obj = wm_images[cmpidx].info, wm_images[cmpidx].imgf
 for index in range(npages):
     page = pdf[index]
-    page.clean_contents()  # unify page's /Contents into one
     imgs = page.get_images()
     if (debug and index == base_page_idx):
         print(f"[DEBUG] base_page_imgs {imgs}")
     if (debug > 1):
         print(f"page{index}: {imgs}")
 
+    page.clean_contents()  # unify page's /Contents into one
     wmimg_xrefs = []
     for img in imgs:
         if (imginfo_cmp(img, wm_image)):
