@@ -6,21 +6,23 @@ import fitz  #python3 pymupdf module
 import io,os,sys
 from PIL import Image
 
-usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-number>]"
+usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-number>] [-c<cmp-index>]"
 path = None
 base_page_idx = 0
+cmpidx = 0
 debug = 0
 for arg in sys.argv[1:]:
     if (arg[0] != '-'):
         if (path == None): path = arg
     else:
-        if (arg[:2] == "-d"):
-            debug += 1
-        elif (arg[:2] == "-h"):
+        if (arg[:2] == "-h"):
             print(usage); exit(0)
+        elif (arg[:2] == "-d"):
+            debug += 1
         elif (arg[:2] == "-n"):
-            idx = int(arg[2:])
-            base_page_idx = idx
+            base_page_idx = int(arg[2:])
+        elif (arg[:2] == "-c"):
+            cmpidx = int(arg[2:])
 if (path == None):
     print(usage)
     exit(1)
@@ -64,17 +66,17 @@ print(f"[INFO] scanning and detecting wartermark image in pdf {path} ...")
 wm_images = [] #yes, I found there are more than 1 image match, don't know why
 for baseimg in base_imgs:
     baseimg_obj = pdf.extract_image(baseimg[0])
-    nimg, pct = 0, 0
+    nimg = 0
     for index in range(npages):
         page = pdf[index]
         for img in page.get_images():
-            imgf_obj = pdf.extract_image(img[0])
-            if (img_cmp_strict(imgf_obj, baseimg_obj)):
-                nimg += 1
+            if (img_cmp(img, baseimg)):
+                imgf_obj = pdf.extract_image(img[0])
+                if (img_cmp_strict(imgf_obj, baseimg_obj)):
+                    nimg += 1
     pct = percent_of(nimg, npages)
     if (pct >= min_occurrence):
         wm_images.append(WMImage(baseimg, baseimg_obj, pct))
-        pct = 0
 if (len(wm_images) == 0):
     print(f"[WARN] did not find warter mark image in {path}")
     exit(1)
@@ -100,7 +102,7 @@ print(f"[INFO] erase warter mark image from pages ...")
 # make a small 100% transparent pixmap (of just any dimension)
 pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
 pix.clear_with()  # clear all samples bytes to 0x00
-wm_imagef_obj = wm_images[0].imgf  #??seems only 1st one works
+wm_image, wm_imagef_obj = wm_images[cmpidx].info, wm_images[cmpidx].imgf
 for index in range(npages):
     page = pdf[index]
     page.clean_contents()  # unify page's /Contents into one
@@ -110,9 +112,10 @@ for index in range(npages):
 
     wmimg_xrefs = []
     for img in imgs:
-        imgf_obj = pdf.extract_image(img[0])
-        if (img_cmp_strict(imgf_obj, wm_imagef_obj)):
-            wmimg_xrefs.append(img[0])
+        if (img_cmp(img, wm_image)):
+            imgf_obj = pdf.extract_image(img[0])
+            if (img_cmp_strict(imgf_obj, wm_imagef_obj)):
+                wmimg_xrefs.append(img[0])
 
     # insert new image just anywhere
     new_xref = page.insert_image(page.rect, pixmap=pix)
