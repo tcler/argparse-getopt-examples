@@ -32,15 +32,15 @@ if (not os.path.isfile(path)):
 
 pdfname = path.split(".")[0]
 
-def img_cmp(img1, img2):
+def imginfo_cmp(img1, img2):
     if (img1[2] == img2[2] and img1[3] == img2[3] and
         img1[4] == img2[4] and img1[5] == img2[5] and img1[8] == img2[8]):
         return True
     else:
         return False
 
-def img_cmp_strict(img1_obj, img2_obj):
-    if ((img1_obj["image"]) == (img2_obj["image"])):
+def imgfobj_cmp(imgf_obj1, imgf_obj2):
+    if (len(imgf_obj1['image']) == len(imgf_obj2['image'])):
         return True
     else:
         return False
@@ -70,9 +70,9 @@ for baseimg in base_imgs:
     for index in range(npages):
         page = pdf[index]
         for img in page.get_images():
-            if (img_cmp(img, baseimg)):
+            if (imginfo_cmp(img, baseimg)):
                 imgf_obj = pdf.extract_image(img[0])
-                if (img_cmp_strict(imgf_obj, baseimg_obj)):
+                if (imgfobj_cmp(imgf_obj, baseimg_obj)):
                     nimg += 1
     pct = percent_of(nimg, npages)
     if (pct >= min_occurrence):
@@ -112,9 +112,9 @@ for index in range(npages):
 
     wmimg_xrefs = []
     for img in imgs:
-        if (img_cmp(img, wm_image)):
+        if (imginfo_cmp(img, wm_image)):
             imgf_obj = pdf.extract_image(img[0])
-            if (img_cmp_strict(imgf_obj, wm_imagef_obj)):
+            if (imgfobj_cmp(imgf_obj, wm_imagef_obj)):
                 wmimg_xrefs.append(img[0])
 
     # insert new image just anywhere
