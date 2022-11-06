@@ -8,6 +8,8 @@ from PIL import Image
 
 usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-index>] [-c<wartermark-index>]"
 path = None
+wm_occurrence = 99.90
+nowm_occurrence = 100 - wm_occurrence
 base_page_idx = 0
 wartermark_idx = -1
 debug = 0
@@ -60,7 +62,6 @@ if (base_page_idx < 0):
 if (base_page_idx > (npages-1)):
     print(f"[WARN] base-page-idx {base_page_idx} beyond the max index, use the max({npages-1}) instead")
     base_page_idx = npages - 1
-min_occurrence = 99.90
 base_page = pdf[base_page_idx]
 base_imgs = base_page.get_images()
 if (debug > 1):
@@ -70,22 +71,31 @@ if (debug > 1):
 #if an image appears in all pages, intend it's wartermark image
 #Note: if this assumption does not hold, more code & options need
 #to be added to allow the user to specify the 'base_page_idx' and
-#frequency of occurrence of warter-mark in pages 'min_occurrence'
+#frequency of occurrence of warter-mark in pages 'wm_occurrence'
 print(f"[INFO] scanning and detecting wartermark image in pdf {path} ...")
 wm_images = [] #yes, I found there are more than 1 image match, don't know why
 for baseimg in base_imgs:
     baseimg_obj = pdf.extract_image(baseimg[0])
-    nimg = 0
+    wmc, nowmc = 0, 0
     for index in range(npages):
         page = pdf[index]
+        hit = 0
         for img in page.get_images():
             if (imginfo_cmp(img, baseimg)):
                 imgf_obj = pdf.extract_image(img[0])
                 if (imgfobj_cmp(imgf_obj, baseimg_obj)):
-                    nimg += 1
-    pct = percent_of(nimg, npages)
-    if (pct >= min_occurrence):
+                    hit = 1
+                    break
+        if (hit):
+            wmc += 1
+        else:
+            nowmc += 1
+        if (percent_of(nowmc, npages) > nowm_occurrence):
+            break
+    pct = percent_of(wmc, npages)
+    if (pct >= wm_occurrence):
         wm_images.append(WMImage(baseimg, baseimg_obj, pct))
+
 if (len(wm_images) == 0):
     print(f"[WARN] did not find wartermark image in {path}")
     exit(1)
