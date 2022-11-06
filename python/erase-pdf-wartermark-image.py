@@ -9,7 +9,6 @@ from PIL import Image
 usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-index>] [-c<wartermark-index>]"
 path = None
 wm_occurrence = 99.90
-nowm_occurrence = 100 - wm_occurrence
 base_page_idx = 0
 wartermark_idx = -1
 debug = 0
@@ -25,6 +24,8 @@ for arg in sys.argv[1:]:
             base_page_idx = int(arg[2:])
         elif (arg[:2] == "-c"):
             wartermark_idx = int(arg[2:])
+        elif (arg[:2] == "-f"):
+            wm_occurrence = float(arg[2:])
 if (path == None):
     print(usage)
     exit(1)
@@ -73,6 +74,7 @@ if (debug > 1):
 #to be added to allow the user to specify the 'base_page_idx' and
 #frequency of occurrence of warter-mark in pages 'wm_occurrence'
 print(f"[INFO] scanning and detecting wartermark image in pdf {path} ...")
+nowm_occurrence = 100 - wm_occurrence
 wm_images = [] #yes, I found there are more than 1 image match, don't know why
 for baseimg in base_imgs:
     baseimg_obj = pdf.extract_image(baseimg[0])
