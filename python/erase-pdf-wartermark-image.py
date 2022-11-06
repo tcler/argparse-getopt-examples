@@ -54,7 +54,9 @@ WMImage = namedtuple('WMImage', ['info', 'imgf', 'pct'])
 
 pdf = fitz.open(path)
 npages = len(pdf)
-if (base_page_idx < 0): base_page_idx += npages
+if (base_page_idx < 0):
+    base_page_idx += npages
+    if (base_page_idx < 0): base_page_idx = 0
 if (base_page_idx > (npages-1)):
     print(f"[WARN] base-page-idx {base_page_idx} beyond the max index, use the max({npages-1}) instead")
     base_page_idx = npages - 1
@@ -105,7 +107,9 @@ if (debug):
         wmimgf = Image.open(io.BytesIO(wmimg_bytes))
         wmimgf.save(wmimgf_path)
 
-if (wartermark_idx < 0): wartermark_idx += nwmimg
+if (wartermark_idx < 0):
+    wartermark_idx += nwmimg
+    if (wartermark_idx < 0): wartermark_idx = 0
 if (wartermark_idx > (nwmimg-1)):
     print(f"[WARN] wartermark-idx {wartermark_idx} beyond the max index, use the max({nwmimg-1}) instead")
     wartermark_idx = nwmimg - 1
