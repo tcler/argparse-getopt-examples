@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#function: detect and remove simple wartermark image from pdf, just for fun
+#auther: <yin-jianhong@163.com>
 #ref: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/image-replacement/remover.py
 #required pkgs on Fedora: mupdf python3-PyMuPDF
 
@@ -6,7 +8,7 @@ import fitz  #python3 pymupdf module
 import io,os,sys
 from PIL import Image
 
-usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-index>] [-c<wartermark-index>]"
+usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-idx>] [-c<wartermark-idx>] [-f<pct>]"
 path = None
 wm_occurrence = 99.90
 base_page_idx = 0
@@ -68,11 +70,11 @@ base_imgs = base_page.get_images()
 if (debug > 1):
     print(f"[DEBUG] base_page_imgs {base_imgs}")
 
-#scan and detect the wartermark image. here we assume:
-#if an image appears in all pages, intend it's wartermark image
-#Note: if this assumption does not hold, more code & options need
-#to be added to allow the user to specify the 'base_page_idx' and
-#frequency of occurrence of warter-mark in pages 'wm_occurrence'
+#scan and detect the wartermark image. by default we assume:
+#if an image appears in all pages, intend it's a wartermark image
+#Note: if this assumption does not hold, more options need to be
+#added to allow the users to specify the 'base_page_idx' and
+#frequency of occurrence of wartermark in pages 'wm_occurrence'
 print(f"[INFO] scanning and detecting wartermark image in pdf {path} ...")
 nowm_occurrence = 100 - wm_occurrence
 wm_images = [] #yes, I found there are more than 1 image match, don't know why
