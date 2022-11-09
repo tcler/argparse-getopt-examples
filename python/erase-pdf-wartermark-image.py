@@ -23,11 +23,11 @@ for arg in sys.argv[1:]:
         elif (arg[:2] == "-d"):
             debug += arg.count('d')
         elif (arg[:2] == "-p"):
-            base_page_idx = int(arg[2:])
+            base_page_idx = int(arg[2:] if arg[2:] else 0)
         elif (arg[:2] == "-i"):
-            wartermark_idx = int(arg[2:])
+            wartermark_idx = int(arg[2:] if arg[2:] else 0)
         elif (arg[:2] == "-f"):
-            wm_occurrence = float(arg[2:])
+            wm_occurrence = float(arg[2:] if arg[2:] else 0)
 if (path == None):
     print(usage)
     exit(1)
