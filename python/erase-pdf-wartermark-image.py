@@ -98,14 +98,14 @@ for baseimg in base_imgs:
             break
     pct = percent_of(wmc, npages)
     if (pct >= wm_occurrence):
-        wm_images.append(WMImage(baseimg, baseimg_obj, pct))
+        wm_images.append(WMImage(baseimg, baseimg_obj, f"{pct}({wmc}/{npages})"))
 
 if (len(wm_images) == 0):
     print(f"[WARN] did not find wartermark image in {path}")
     exit(1)
 
 nwmimg = len(wm_images)
-print(f"[INFO] detected {nwmimg} wartermark image[s]:")
+print(f"[INFO] detected \033[34m{nwmimg} wartermark image[s]\033[0m:")
 for i in range(nwmimg):
     info, imgf, pct = wm_images[i].info, wm_images[i].imgf, wm_images[i].pct
     print(f"[INFO] wartermark image {i}:\n[INFO] |-> info: {info}\n[INFO] |-> data-size: {len(imgf['image'])}\n[INFO] `-> occurrence: {pct}")
@@ -127,7 +127,7 @@ if (wartermark_idx < 0):
 if (wartermark_idx > (nwmimg-1)):
     print(f"[WARN] wartermark-idx {wartermark_idx} beyond the max index, use the max({nwmimg-1}) instead")
     wartermark_idx = nwmimg - 1
-print(f"[INFO] erase wartermark image {wartermark_idx} from pages ...")
+print(f"[INFO] erase \033[34mwartermark image {wartermark_idx}\033[0m from pages ...")
 # make a small 100% transparent pixmap (of just any dimension)
 pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)
 pix.clear_with()  # clear all samples bytes to 0x00
