@@ -8,7 +8,7 @@ import fitz  #python3 pymupdf module
 import io,os,sys
 from PIL import Image
 
-usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-n<page-idx>] [-c<wartermark-idx>] [-f<pct>]"
+usage = f"Usage: {sys.argv[0]} <pdf-file-with-wartermark-image> [-h] [-d|-debug] [-p<page-idx>] [-i<wartermark-image-idx>] [-f<pct>]"
 path = None
 wm_occurrence = 99.90
 base_page_idx = 0
@@ -22,9 +22,9 @@ for arg in sys.argv[1:]:
             print(usage); exit(0)
         elif (arg[:2] == "-d"):
             debug += arg.count('d')
-        elif (arg[:2] == "-n"):
+        elif (arg[:2] == "-p"):
             base_page_idx = int(arg[2:])
-        elif (arg[:2] == "-c"):
+        elif (arg[:2] == "-i"):
             wartermark_idx = int(arg[2:])
         elif (arg[:2] == "-f"):
             wm_occurrence = float(arg[2:])
