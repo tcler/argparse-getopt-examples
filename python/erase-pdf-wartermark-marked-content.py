@@ -39,6 +39,7 @@ if (page_idx and page_idx > (npages-1)):
     print(f"[WARN] page-idx {page_idx} beyond the max index, use the max({npages-1}) instead")
     page_idx = npages - 1
 
+print(f"[INFO] scanning and detecting wartermark in marted-content in file {path} ...")
 idxrange = range(npages)
 if page_idx:
     idxrange = [page_idx]
