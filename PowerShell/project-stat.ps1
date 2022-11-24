@@ -10,7 +10,7 @@ Function Excel2csv {
 	$excelFile = $args[0]
 	$ncsvFile = $args[1]
 
-    $csvFile = New-TemporaryFile
+	$csvFile = New-TemporaryFile
 
 	$Excel = New-Object -ComObject Excel.Application
 	$Excel.DisplayAlerts = $false;
@@ -18,12 +18,12 @@ Function Excel2csv {
 	$ws0 = @($wb.Worksheets)[0]
 	$ws0.SaveAs($csvFile, 6)
 
-    #将 csv 文件编码转换为 UTF-8
-    $content = (Get-Content -Path $csvFile)
-    Set-Content -Path $ncsvFile -Encoding UTF8 -Value $content
+	#将 csv 文件编码转换为 UTF-8
+	$content = (Get-Content -Path $csvFile)
+	Set-Content -Path $ncsvFile -Encoding UTF8 -Value $content
 
 	$Excel.Quit()
-    #if (Test-Path -Path $csvFile) { Remove-Item -Path $csvFile }
+	#if (Test-Path -Path $csvFile) { Remove-Item -Path $csvFile }
 }
 
 #变量声明
