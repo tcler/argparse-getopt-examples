@@ -1,4 +1,3 @@
-
 param (
 	[switch]$debug = $false,
 	[switch]$projectInfo = $false,
@@ -28,8 +27,8 @@ Function Excel2csv {
 
 #变量声明
 $excelPath = Resolve-Path $args[0]
-$csvPath =  "$pwd\data.csv"
-$jsonPath =  "$pwd\data.json"
+$csvPath =  "$pwd\tmp-data.csv"
+$jsonPath =  "$pwd\tmp-data.json"
 if (Test-Path -Path $csvPath) { Remove-Item -Path $csvPath }
 if (Test-Path -Path $jsonPath) { Remove-Item -Path $jsonPath }
 
@@ -40,10 +39,14 @@ Excel2csv $excelPath $csvPath
 Import-Csv $csvPath -Header Num,Name,Owner,Scale,Value,BenefitSalaryRatio,BenefitSalaryTotal,OwnerRatio,Comment,GrantTime,GrantAmount,GrantComment,ArchiveTime,ArchiveRatio,ArchiveAmount,ArchiveComment,CompletedTime,CompletedRatio,CompletedAmount,CompletedComment,TOLL-finishTime,TOLL-finishRatio,TOLL-finishAmount,TOLL-finishComment,PerformancePay,PerformancePayBalance,Comment2,InnovationIncentive |
 	ConvertTo-Json |
 	Set-Content -Path $jsonPath
+if (Test-Path -Path $csvPath) { Remove-Item -Path $csvPath }
 
 #数据处理
 $ProjectArr = @()
 $ProjectArray = Get-Content $jsonPath | ConvertFrom-Json
+if (!$debug) {
+	if (Test-Path -Path $jsonPath) { Remove-Item -Path $jsonPath }
+}
 for ($i=0; $i -lt $ProjectArray.Count; $i++) {
 	$project = $ProjectArray[$i]
 	if (!$project.Num) { continue }
@@ -57,7 +60,7 @@ $edistriSum = @{}
 $edistriBalanceSum = @{}
 
 if ($projectInfo) {
-	 $ProjectArr
+	$ProjectArr
 } elseif ($payInfo) {
 	for ($i=0; $i -lt $ProjectArr.Count; $i++) {
 		$project = $ProjectArr[$i]
