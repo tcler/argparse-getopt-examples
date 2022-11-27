@@ -5,6 +5,7 @@ param (
 #±äÁ¿ÉùÃ÷
 $OrigExcelFile = Resolve-Path $args[0]
 $headRowsCnt = 4
+$nameColIdx = 5
 
 echo "{info} open $OrigExcelFile ..."
 $Excel = New-Object -ComObject Excel.Application
@@ -36,7 +37,7 @@ New-Item -Path $payrollFolder -ItemType Directory -ErrorAction Ignore >$null
 
 $dstRowIdx = $headRowsCnt
 for ($i = $headRowsCnt; $i -lt $rowcnt; $i++) {
-	$name = $ws.Cells.Item($i, 5).text 
+	$name = $ws.Cells.Item($i, $nameColIdx).text 
 	if ($name -eq "") { continue }
 	$newPath = "$payrollFolder\Pay-$name.xlsx"
 	echo "{info} generate $newPath"
@@ -60,5 +61,7 @@ for ($i = $headRowsCnt; $i -lt $rowcnt; $i++) {
 	[void]$workbook.Worksheets.Item(2).Delete()
 	$workbook.SaveAs($newPath)
 }
+[void]$wstmp.Delete()
+$Excel.Workbooks.Close()
 
 $Excel.Quit()
