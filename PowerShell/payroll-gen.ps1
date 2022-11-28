@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param (
-	[int]$headRowsCount = 4,
+	[int]$headRowsCount = 3,
 	[int]$nameColumnIndex = 5,
 
 	[Parameter(Position = 0, ValueFromRemainingArguments = $true)]
@@ -9,6 +9,7 @@ param (
 
 #±äÁ¿ÉùÃ÷
 $OrigExcelFile = Resolve-Path @($oargs)[0]
+$firstDataRowIndex = $headRowsCount + 1
 
 echo "{info} open $OrigExcelFile ..."
 $Excel = New-Object -ComObject Excel.Application
@@ -25,8 +26,8 @@ $wstmp = $wb.Worksheets.Item(2)
 $wstmp.Name = "tmpsheet"
 
 $tmprowcnt = ($wstmp.UsedRange.Rows).count
-while ($tmprowcnt -gt $headRowsCount) {
-	for ($i = $headRowsCount; $i -lt $tmprowcnt; $i++) {
+while ($tmprowcnt -gt $firstDataRowIndex) {
+	for ($i = $firstDataRowIndex; $i -lt $tmprowcnt; $i++) {
 		[void]$wstmp.Cells.Item($i, 1).EntireRow.Delete()
 	}
 	$tmprowcnt = ($wstmp.UsedRange.Rows).count
@@ -38,8 +39,8 @@ echo "{info} tempsheet row count: $tmprowcnt"
 $payrollFolder = "$pwd\Payroll-List"
 New-Item -Path $payrollFolder -ItemType Directory -ErrorAction Ignore >$null
 
-$dstRowIdx = $headRowsCount
-for ($i = $headRowsCount; $i -lt $rowcnt; $i++) {
+$dstRowIdx = $firstDataRowIndex
+for ($i = $firstDataRowIndex; $i -lt $rowcnt; $i++) {
 	$name = $ws.Cells.Item($i, $nameColumnIndex).text 
 	if ($name -eq "") { continue }
 	$newPath = "$payrollFolder\Pay-$name.xlsx"
