@@ -7,6 +7,14 @@ param (
 	[string]$oargs
 )
 
+$existingExcel = @()
+Get-Process Excel -ErrorAction Ignore | % { $existingExcel += $_.ID }
+echo "{debug} existingExcel: {$existingExcel}"
+function Stop-Excel
+{
+	Get-process EXCEL | % { if ($_.ID -notmatch $existingExcel) {echo "{debug} stop $($_.ID)"; Stop-Process -ID $_.ID} }
+}
+
 #±äÁ¿ÉùÃ÷
 $OrigExcelFile = Resolve-Path @($oargs)[0]
 $firstDataRowIndex = $headRowsCount + 1
@@ -21,8 +29,8 @@ $rowcnt = ($ws.UsedRange.Rows).count
 $colcnt = ($ws.UsedRange.Colums).count
 
 echo "{info} create template worksheet ..."
-$ws.Copy($wb.Worksheets.Item(2))
-$wstmp = $wb.Worksheets.Item(2)
+$ws.Copy($wb.Worksheets.Item(1))
+$wstmp = $wb.Worksheets.Item(1)
 $wstmp.Name = "tmpsheet"
 
 $tmprowcnt = ($wstmp.UsedRange.Rows).count
@@ -40,7 +48,7 @@ $payrollFolder = "$pwd\Payroll-List"
 New-Item -Path $payrollFolder -ItemType Directory -ErrorAction Ignore >$null
 
 $dstRowIdx = $firstDataRowIndex
-for ($i = $firstDataRowIndex; $i -lt $rowcnt; $i++) {
+for ($i = $firstDataRowIndex; $i -le $rowcnt; $i++) {
 	$name = $ws.Cells.Item($i, $nameColumnIndex).text 
 	if ($name -eq "") { continue }
 	$newPath = "$payrollFolder\Pay-$name.xlsx"
@@ -69,3 +77,4 @@ for ($i = $firstDataRowIndex; $i -lt $rowcnt; $i++) {
 $Excel.Workbooks.Close()
 
 $Excel.Quit()
+Stop-Excel
