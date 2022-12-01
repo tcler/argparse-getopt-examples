@@ -1,0 +1,137 @@
+Sub 项目工资归档统计()
+    Dim oshtName As String, shtName As String
+    oshtName = "工资"
+    shtName = "工资-统计"
+    
+    Rem 如果新的统计表表已存在，删除它，重新生成
+    If wsExists(shtName) = True Then
+        Application.DisplayAlerts = False 'switching off the alert button
+        Sheets(shtName).Delete
+        Application.DisplayAlerts = True 'switching on the alert button
+    End If
+
+    Rem Copy一份工资表
+    Sheets(oshtName).Copy Before:=Sheets(1)
+    ActiveSheet.Name = shtName
+
+    Rem 重构新的工资表
+    '增加一列 "项目成员"
+    memColLetter = "D"
+    memColNum = Range(memColLetter & 1).Column
+    Columns(memColNum).Insert
+    Range(memColLetter & 2).Value = "项目成员"
+    Range("Q2").Value = "（成果归档）个人发放金额"
+    Range("U2").Value = "（竣工归档）个人发放金额"
+    Range("Y2").Value = "（收费完成）个人发放金额"
+    
+    '遍历项目，获取三阶段工资发放数据
+    step = 0
+    For I = 3 To ActiveSheet.UsedRange.Rows.Count
+        rowNum = I + step
+        Rows(rowNum).EntireRow.Select
+        If IsEmpty(Cells(rowNum, 1)) = True Then
+            Exit For
+        End If
+        If rowNum > 4096 Then
+            Exit For
+        End If
+        Rem MsgBox ("rowNum: " & rowNum)
+        
+        stage1 = Cells(rowNum, Range("Q1").Column).Value
+        stage2 = Cells(rowNum, Range("U1").Column).Value
+        stage3 = Cells(rowNum, Range("Y1").Column).Value
+        
+        Dim re As Object
+        Set re = CreateObject("VBScript.RegExp")
+        With re
+            .Global = True
+            .Pattern = "(\D+)(\d+)"
+        End With
+
+        Dim paydict As Object
+        Dim paystage As Object
+        Set paydict = CreateObject("Scripting.Dictionary")
+
+        paylist1 = Split(Replace(stage1, " ", vbLf), vbLf)
+        For j = 0 To UBound(paylist1)
+            paystr = paylist1(j)
+            If re.Test(paystr) = True Then
+                Set M = re.Execute(paystr)
+                Name = M(0).SubMatches(0)
+                MoneyStr = M(0).SubMatches(1)
+                Money = CLng(MoneyStr)
+                If Not paydict.Exists(Name) Then
+                    Set paystage = CreateObject("Scripting.Dictionary")
+                    paystage.Add "stage1", Money
+                    paydict.Add Name, paystage
+                Else
+                    paydict(Name)("stage1") = paydict(Name)("stage1") + Money
+                End If
+            End If
+        Next
+        paylist2 = Split(Replace(stage2, " ", vbLf), vbLf)
+        For j = 0 To UBound(paylist2)
+            paystr = paylist2(j)
+            If re.Test(paystr) = True Then
+                Set M = re.Execute(paystr)
+                Name = M(0).SubMatches(0)
+                MoneyStr = M(0).SubMatches(1)
+                Money = CLng(MoneyStr)
+                If Not paydict.Exists(Name) Then
+                    Set paystage = CreateObject("Scripting.Dictionary")
+                    paystage.Add "stage2", Money
+                    paydict.Add Name, paystage
+                Else
+                    paydict(Name)("stage2") = paydict(Name)("stage2") + Money
+                End If
+            End If
+        Next
+        paylist3 = Split(Replace(stage3, " ", vbLf), vbLf)
+        For j = 0 To UBound(paylist3)
+            paystr = paylist3(j)
+            If re.Test(paystr) = True Then
+                Set M = re.Execute(paystr)
+                Name = M(0).SubMatches(0)
+                MoneyStr = M(0).SubMatches(1)
+                Money = CLng(MoneyStr)
+                If Not paydict.Exists(Name) Then
+                    Set paystage = CreateObject("Scripting.Dictionary")
+                    paystage.Add "stage3", Money
+                    paydict.Add Name, paystage
+                Else
+                    paydict(Name)("stage3") = paydict(Name)("stage3") + Money
+                End If
+            End If
+        Next
+
+        For kidx = 0 To paydict.Count - 1
+            rowNumx = rowNum + kidx
+            keys = paydict.keys
+            Name = keys(kidx)
+            Dim RMB As Object
+            Set RMB = paydict(Name)
+            Rem MsgBox (Name & " " & RMB(0))
+            If kidx <> 0 Then
+                Rows(rowNumx - 1).EntireRow.Select
+                Selection.Copy
+                Selection.Insert Shift:=xlDown
+            End If
+
+            Range(memColLetter & rowNumx).Value = Name
+            Range("Q" & rowNumx).Value = IIf(RMB.Exists("stage1"), RMB("stage1"), 0)
+            Range("U" & rowNumx).Value = IIf(RMB.Exists("stage2"), RMB("stage2"), 0)
+            Range("Y" & rowNumx).Value = IIf(RMB.Exists("stage3"), RMB("stage3"), 0)
+        Next
+
+        step = step + paydict.Count - 1
+    Next
+    Rows(3).EntireRow.Select
+    MsgBox ("统计表已生成！")
+End Sub
+
+Function wsExists(wsName As String) As Boolean
+    Dim ws: For Each ws In Sheets
+    wsExists = (wsName = ws.Name): If wsExists Then Exit Function
+    Next ws
+End Function
+
