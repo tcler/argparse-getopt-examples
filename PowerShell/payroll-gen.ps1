@@ -18,12 +18,16 @@ function Stop-Excel
 #变量声明
 $OrigExcelFile = Resolve-Path @($oargs)[0]
 $firstDataRowIndex = $headRowsCount + 1
+$timeColumnIndex = 1
 
 echo "{info} open $OrigExcelFile ..."
 $Excel = New-Object -ComObject Excel.Application
 $Excel.DisplayAlerts = $false;
 $wb = $Excel.Workbooks.Open($OrigExcelFile)
 $ws = @($wb.Worksheets)[0]
+echo "{debug} $($ws.Cells.Item(1,5).text)"
+echo "{debug} $($ws.Cells.Item(2,5).text)"
+echo "{debug} $($ws.Cells.Item(3,5).text)"
 
 $rowcnt = ($ws.UsedRange.Rows).count
 $colcnt = ($ws.UsedRange.Colums).count
@@ -44,14 +48,16 @@ while ($tmprowcnt -gt $firstDataRowIndex) {
 echo "{info} origsheet row count: $rowcnt"
 echo "{info} tempsheet row count: $tmprowcnt"
 
-$payrollFolder = "$pwd\Payroll-List"
+$time = $ws.Cells.Item($firstDataRowIndex, $timeColumnIndex).text 
+$payrollFolder = "$pwd\payroll-list-$time"
 New-Item -Path $payrollFolder -ItemType Directory -ErrorAction Ignore >$null
 
 $dstRowIdx = $firstDataRowIndex
 for ($i = $firstDataRowIndex; $i -le $rowcnt; $i++) {
+	$time = $ws.Cells.Item($i, $timeColumnIndex).text 
 	$name = $ws.Cells.Item($i, $nameColumnIndex).text 
 	if ($name -eq "") { continue }
-	$newPath = "$payrollFolder\Pay-$name.xlsx"
+	$newPath = "$payrollFolder\${time}-工资单 $name.xlsx"
 	echo "{info} generate $newPath"
 	$workbook = $Excel.Workbooks.Add()
 	$worksheet = $workbook.Worksheets.Item(1)
@@ -70,7 +76,7 @@ for ($i = $firstDataRowIndex; $i -le $rowcnt; $i++) {
 	$selectRange = $worksheet.Cells.Item($dstRowIdx, 5)
 	[void]$selectRange.Select()
 
-	[void]$workbook.Worksheets.Item(2).Delete()
+	#[void]$workbook.Worksheets.Item(2).Delete()
 	$workbook.SaveAs($newPath)
 }
 [void]$wstmp.Delete()
