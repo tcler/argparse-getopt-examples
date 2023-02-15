@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param (
 	[int]$headRowsCount = 3,
 	[int]$nameColumnIndex = 5,
@@ -116,3 +116,4 @@ $Excel.Workbooks.Close()
 
 $Excel.Quit()
 Stop-Excel
+
