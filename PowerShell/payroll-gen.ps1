@@ -15,8 +15,33 @@ function Stop-Excel
 	Get-process EXCEL | % { if ($_.ID -notmatch $existingExcel) {echo "{debug} stop $($_.ID)"; Stop-Process -ID $_.ID} }
 }
 
-#��������
-$OrigExcelFile = Resolve-Path @($oargs)[0]
+#变量声明
+if ($args.count -eq 0) {
+	Add-Type -AssemblyName System.Windows.Forms
+
+	$FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+		InitialDirectory = "$(Get-Location)"
+		Filter = 'All(*.*)|*.*|OldSpreadSheet (*.xls)|*.xls|SpreadSheet (*.xlsx)|*.xlsx'
+		Title = '======== 请选择要处理表格文件 ========'
+		MultiSelect = $true
+	}
+	$fileBrowserResult = $FileBrowser.ShowDialog()
+	if ($fileBrowserResult -eq 'OK') {
+		foreach ($file in @($FileBrowser.FileNames)) {
+			echo "$file"
+		}
+	}
+	$OrigExcelFile = @($FileBrowser.FileNames)[0]
+} else {
+	$OrigExcelFile = Resolve-Path @($oargs)[0]
+}
+if (!$OrigExcelFile) {
+	echo "【Note】您没有提供文件路径，请重新执行，并选择需要处理的文件。"
+	#cmd /c pause
+	Read-Host -Prompt "按任意键退出..."
+	Exit
+}
+
 $firstDataRowIndex = $headRowsCount + 1
 $timeColumnIndex = 1
 
@@ -24,6 +49,13 @@ echo "{info} open $OrigExcelFile ..."
 $Excel = New-Object -ComObject Excel.Application
 $Excel.DisplayAlerts = $false;
 $wb = $Excel.Workbooks.Open($OrigExcelFile)
+if (!$wb) {
+	echo "{ERROR} open Excel file failed, please check the file format."
+	$Excel.Quit()
+	Stop-Excel
+	Exit
+}
+
 $ws = @($wb.Worksheets)[0]
 echo "{debug} $($ws.Cells.Item(1,5).text)"
 echo "{debug} $($ws.Cells.Item(2,5).text)"
@@ -56,8 +88,8 @@ $dstRowIdx = $firstDataRowIndex
 for ($i = $firstDataRowIndex; $i -le $rowcnt; $i++) {
 	$time = $ws.Cells.Item($i, $timeColumnIndex).text 
 	$name = $ws.Cells.Item($i, $nameColumnIndex).text 
-	if ($name -eq "") { continue }
-	$newPath = "$payrollFolder\${time}-���ʵ� $name.xlsx"
+	if ($name -eq "" -or $time -eq "") { continue }
+	$newPath = "$payrollFolder\${time}-工资单 $name.xlsx"
 	echo "{info} generate $newPath"
 	$workbook = $Excel.Workbooks.Add()
 	$worksheet = $workbook.Worksheets.Item(1)
