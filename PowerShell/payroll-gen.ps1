@@ -47,6 +47,7 @@ $firstDataRowIndex = $headRowsCount + 1
 $timeColumnIndex = 1
 $Excel = New-Object -ComObject Excel.Application
 $Excel.DisplayAlerts = $false;
+$WrongFileList = @()
 
 foreach ($OrigExcelFile in $OrigExcelFiles) {
 	echo "`n{info} open $OrigExcelFile ..."
@@ -54,6 +55,7 @@ foreach ($OrigExcelFile in $OrigExcelFiles) {
 	$wb = $Excel.Workbooks.Open($OrigExcelFile)
 	if (!$wb) {
 		echo "{ERROR} open Excel file failed, please check the file format."
+		$WrongFileList += $OrigExcelFile
 		[void]$Excel.Quit()
 		continue
 	}
@@ -61,6 +63,7 @@ foreach ($OrigExcelFile in $OrigExcelFiles) {
 	$ws = @($wb.Worksheets)[0]
 	if (!$ws) {
 		echo "{ERROR} can not get worksheets, please check the file format."
+		$WrongFileList += $OrigExcelFile
 		$Excel.Workbooks.Close()
 		[void]$Excel.Quit()
 		continue
@@ -129,3 +132,13 @@ foreach ($OrigExcelFile in $OrigExcelFiles) {
 
 [void]$Excel.Quit()
 Stop-Excel
+
+if ($WrongFileList) {
+	Write-Host "【Error】打开下面的文件失败，请检查文件格式是否正确:" -ForegroundColor Yellow -BackgroundColor DarkGreen
+	foreach ($file in $WrongFileList) {
+		Write-Host "-> $file"  -ForegroundColor Yellow -BackgroundColor DarkGreen
+	}
+	echo "`n【Note】按任意键退出当前窗口..."
+ 	cmd /c pause >$nil
+	Exit
+}
