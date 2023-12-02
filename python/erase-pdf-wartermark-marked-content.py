@@ -3,6 +3,7 @@
 #auther: <yin-jianhong@163.com>
 #ref: https://github.com/pymupdf/PyMuPDF/discussions/1855
 #required pkgs on Fedora: mupdf python3-PyMuPDF
+#required pkgs on debian: mupdf python3-fitz
 
 import fitz  #python3 pymupdf module
 import io,os,sys

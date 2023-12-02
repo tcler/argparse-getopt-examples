@@ -2,7 +2,8 @@
 #function: detect and remove simple wartermark image from pdf, just for fun
 #auther: <yin-jianhong@163.com>
 #ref: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/image-replacement/remover.py
-#required pkgs on Fedora: mupdf python3-PyMuPDF
+#required pkgs on Fedora: mupdf python3-PyMuPDF python3-pillow
+#required pkgs on debian: mupdf python3-fitz python3-pil
 
 import fitz  #python3 pymupdf module
 import io,os,sys
