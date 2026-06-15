@@ -1,6 +1,6 @@
 // ref: https://picocli.info/#_groovy
 
-//'info.picocli.picocli' has been rename to 'info.picocli:picocli-groovy' since 4.*
+//'info.picocli.picocli' has been renamed to 'info.picocli:picocli-groovy' since 4.*
 @Grab('info.picocli:picocli-groovy:4.6.1')
 @GrabConfig(systemClassLoader=true)
 //Annotation PicocliScript Deprecated, use PicocliScript2 instead
